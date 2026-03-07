@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CET-4 词汇内化系统 | {{TOPIC_TITLE}}</title>
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #0284c7;
+            --accent-color: #f97316;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --card-bg: #ffffff;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background-color: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid var(--primary-color); padding-bottom: 20px; }
+        h1 { color: var(--primary-color); margin: 0; font-size: 2.2rem; }
+        h2 { color: var(--secondary-color); border-left: 5px solid var(--accent-color); padding-left: 15px; margin-top: 40px; margin-bottom: 20px; }
+        .vocab-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f1f5f9; transition: transform 0.2s; }
+        .vocab-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .word-title { font-size: 1.25rem; font-weight: bold; color: var(--primary-color); }
+        .phonetic { color: #64748b; font-family: 'Courier New', monospace; margin-left: 10px; }
+        .pos { background-color: var(--accent-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; vertical-align: middle; }
+        .speaker-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; margin-left: 10px; color: var(--secondary-color); }
+        .original-sentence { margin-top: 10px; color: #475569; border-left: 3px solid #cbd5e1; padding-left: 10px; font-style: italic; background-color: #e2e8f0; padding: 8px; border-radius: 0 4px 4px 0; }
+        .example-en { margin-top: 10px; font-weight: 500; }
+        .example-cn { color: #64748b; font-size: 0.9rem; }
+        /* Matching */
+        .matching-container { display: flex; justify-content: space-between; gap: 20px; }
+        .matching-column { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .match-item { padding: 12px; background-color: #fff; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .match-item:hover { background-color: #e0f2fe; border-color: var(--primary-color); }
+        .match-item.selected { background-color: var(--primary-color); color: white; }
+        .match-item.matched { background-color: #dcfce7; border-color: var(--success-color); color: #166534; cursor: default; opacity: 0.8; }
+        .match-item.matched-wrong { background-color: #fee2e2; border-color: var(--error-color); }
+        /* Inputs */
+        input[type="text"] { border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; margin: 0 4px; font-family: inherit; }
+        input[type="text"]:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2); }
+        .gap-fill-text { line-height: 2; background-color: #f1f5f9; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        /* Registration */
+        #registration-section { background-color: #e0f2fe; border: 2px solid #7dd3fc; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: center; }
+        .reg-input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin: 5px; }
+        #start-btn { background-color: var(--primary-color); color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+        #exercise-content { display: none; animation: fadeIn 0.5s ease-in; }
+        /* Footer */
+        .submit-section { margin-top: 50px; text-align: center; padding-top: 20px; border-top: 2px solid #e2e8f0; }
+        #submit-btn { background-color: var(--success-color); color: white; font-size: 1.2rem; padding: 12px 32px; border: none; border-radius: 8px; cursor: pointer; }
+        #result-display { margin-top: 20px; font-size: 1.2rem; font-weight: bold; display: none; padding: 20px; background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; color: #166534; }
+        .answer-key { margin-top: 20px; padding: 15px; background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; color: #166534; display: none; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header><h1>📘 CET-4 词汇内化系统 <small>{{TOPIC_TITLE}}</small></h1></header>
+    <div id="registration-section">
+        <h3>👋 欢迎！请先填写您的信息 (Student Registration)</h3>
+        <div><input type="text" id="student-name" class="reg-input" placeholder="姓名 (Name)"> <input type="text" id="student-class" class="reg-input" placeholder="班级 (Class)"> <input type="text" id="student-id" class="reg-input" placeholder="学号 (Student ID)"></div>
+        <button id="start-btn" onclick="startExercise()">开始练习 (Start Exercise)</button>
+    </div>
+    <div id="exercise-content">
+        <section id="phase1">
+            <h2>初阶：输入与识别 (Input & Recognition)</h2>
+            <div id="glossary">
+                <h3>1. 音形义讲义 (The Glossary)</h3>
+                <p style="font-style:italic;color:#666">点击 🔊 图标收听发音。</p>
+                <!-- DATA_GLOSSARY_ITEMS -->
+            </div>
+            <div id="matching">
+                <h3>2. 释义连线 (Meaning Matching)</h3>
+                <div class="matching-container" id="meaning-match-container"></div>
+                <div class="answer-key" id="ans-2"><h4>✅ 参考答案</h4><p>{{DATA_ANS_MATCHING}}</p></div>
+            </div>
+            <div id="gap-filling">
+                <h3>3. 语境还原填空 (Contextual Gap-filling)</h3>
+                <div class="gap-fill-text">{{DATA_GAP_FILL_TEXT}}</div>
+                <div class="answer-key" id="ans-3"><h4>✅ 参考答案</h4><p>{{DATA_ANS_GAP_FILL}}</p></div>
+            </div>
+        </section>
+        <section id="phase2">
+            <h2>中阶：内化与操练 (Intake & Manipulation)</h2>
+            <div id="collocation">
+                <h3>4. 词块/搭配匹配 (Collocation Match)</h3>
+                <div class="matching-container" id="collocation-match-container"></div>
+                <div class="answer-key" id="ans-4"><h4>✅ 参考答案</h4><p>{{DATA_ANS_COLLOCATION}}</p></div>
+            </div>
+            <div id="grammar">
+                <h3>5. 语法填空/变形 (Grammatical Transformation)</h3>
+                <ol>{{DATA_GRAMMAR_ITEMS}}</ol>
+                <div class="answer-key" id="ans-5"><h4>✅ 参考答案</h4><p>{{DATA_ANS_GRAMMAR}}</p></div>
+            </div>
+        </section>
+        <div class="submit-section">
+            <button id="submit-btn" onclick="checkAllAnswers()">提交并检查答案 (Submit & Check)</button>
+            <div id="result-display"></div>
+        </div>
+    </div>
+</div>
+<script>
+    // DATA INJECTION POINTS
+    const meaningData = {{JS_DATA_MEANING}};
+    const collocationData = {{JS_DATA_COLLOCATION}};
+    
+    // Core Logic
+    let studentInfo = { name: "", class: "", id: "" };
+    function startExercise() {
+        const name = document.getElementById('student-name').value.trim();
+        const cls = document.getElementById('student-class').value.trim();
+        const id = document.getElementById('student-id').value.trim();
+        if (!name || !cls) { alert("请至少填写姓名和班级 (Please fill in your Name and Class)."); return; }
+        studentInfo = { name, class: cls, id };
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('exercise-content').style.display = 'block';
+    }
+    // Matching Logic (Standard)
+    let currentSelection = { matchesMeaning: { left: null, right: null }, matchesCollocation: { left: null, right: null } };
+    window.onload = function() {
+        renderMatching("meaning-match-container", meaningData, "matchesMeaning");
+        renderMatching("collocation-match-container", collocationData, "matchesCollocation");
+    };
+    function renderMatching(containerId, data, storageName) {
+        const container = document.getElementById(containerId);
+        const leftCol = document.createElement('div'); leftCol.className = 'matching-column';
+        const rightCol = document.createElement('div'); rightCol.className = 'matching-column';
+        const rightData = [...data].sort(() => Math.random() - 0.5);
+        data.forEach(item => {
+            const div = document.createElement('div'); div.className = 'match-item';
+            div.textContent = item.en || item.partA; div.dataset.id = item.id; div.dataset.side = 'left';
+            div.onclick = (e) => handleMatchClick(e, storageName); leftCol.appendChild(div);
+        });
+        rightData.forEach(item => {
+            const div = document.createElement('div'); div.className = 'match-item';
+            div.textContent = item.cn || item.partB; div.dataset.id = item.id; div.dataset.side = 'right';
+            div.onclick = (e) => handleMatchClick(e, storageName); rightCol.appendChild(div);
+        });
+        container.appendChild(leftCol); container.appendChild(rightCol);
+    }
+    function handleMatchClick(e, storageName) {
+        const el = e.target; if (el.classList.contains('matched')) return;
+        const side = el.dataset.side; const current = currentSelection[storageName];
+        if (current[side] === el) { el.classList.remove('selected'); current[side] = null; return; }
+        if (current[side]) current[side].classList.remove('selected');
+        el.classList.add('selected'); current[side] = el;
+        if (current.left && current.right) checkMatch(current.left, current.right, storageName);
+    }
+    function checkMatch(leftEl, rightEl, storageName) {
+        if (leftEl.dataset.id === rightEl.dataset.id) {
+            leftEl.classList.remove('selected'); rightEl.classList.remove('selected');
+            leftEl.classList.add('matched'); rightEl.classList.add('matched');
+            leftEl.textContent += " ✅"; rightEl.textContent = "✅ " + rightEl.textContent;
+        } else {
+            leftEl.classList.add('matched-wrong'); rightEl.classList.add('matched-wrong');
+            setTimeout(() => { leftEl.classList.remove('matched-wrong', 'selected'); rightEl.classList.remove('matched-wrong', 'selected'); }, 500);
+        }
+        currentSelection[storageName] = { left: null, right: null };
+    }
+    // TTS Logic
+    let voices = []; function loadVoices() { voices = window.speechSynthesis.getVoices(); }
+    loadVoices(); if (window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = loadVoices;
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; utterance.rate = 0.8;
+        if (voices.length === 0) loadVoices();
+        const preferredVoice = voices.find(v => v.name === 'Google US English') || voices.find(v => v.name === 'Microsoft Zira Desktop') || voices.find(v => v.name === 'Samantha');
+        if (preferredVoice) utterance.voice = preferredVoice;
+        window.speechSynthesis.speak(utterance);
+    }
+    // Validation
+    function checkAllAnswers() {
+        let score = 0; let total = 0;
+        // Gaps & Grammar
+        document.querySelectorAll('.gap-input, .grammar-input').forEach(input => {
+            total++;
+            if (input.value.trim().toLowerCase() === input.dataset.answer.toLowerCase()) {
+                score++; input.style.borderColor = 'var(--success-color)'; input.style.backgroundColor = '#dcfce7';
+            } else {
+                input.style.borderColor = 'var(--error-color)'; input.style.backgroundColor = '#fee2e2';
+            }
+        });
+        const resultDiv = document.getElementById('result-display');
+        const percentage = total === 0 ? 0 : Math.round((score / total) * 100);
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <h3>📊 成绩单 (Report Card)</h3>
+            <div id="report-text" style="text-align: left; display: inline-block;">
+                <p><strong>姓名 (Name):</strong> ${studentInfo.name}</p>
+                <p><strong>班级 (Class):</strong> ${studentInfo.class}</p>
+                <p><strong>学号 (ID):</strong> ${studentInfo.id || 'N/A'}</p>
+                <hr>
+                <p><strong>Written Score:</strong> ${score}/${total} (${percentage}%)</p>
+            </div>
+            <br>
+            <button onclick="copyReport()" style="margin-top:15px;background-color:#64748b;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:0.9rem;">📋 复制成绩 (Copy Result)</button>
+            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">点击复制后，请粘贴发送给老师<br>(Click copy, then paste and send to your teacher)</p>
+        `;
+        document.querySelectorAll('.answer-key').forEach(el => el.style.display = 'block');
+        alert(`Hello ${studentInfo.name}!\nScore: ${score}/${total}\n\nGreat job! Scroll down to see answers and COPY your result.`);
+    }
+
+    function copyReport() {
+        const reportText = document.getElementById('report-text').innerText;
+        const finalCopy = `[CET-4 Vocab Exercise]\n------------------\n${reportText}\n------------------`;
+        navigator.clipboard.writeText(finalCopy).then(() => {
+            alert("✅ 成绩已复制！\n请去微信/钉钉粘贴发送给老师。\n(Copied! Please paste and send to your teacher.)");
+        }).catch(err => {
+            alert("❌ 复制失败，请手动截图成绩单。\n(Copy failed, please take a screenshot.)");
+        });
+    }
+</script>
+</body>
+</html>

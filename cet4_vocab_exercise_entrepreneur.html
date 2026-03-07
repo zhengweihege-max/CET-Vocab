@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CET-4 词汇内化系统 (Willpower & Success) | Vocabulary Internalization System</title>
+    <style>
+        :root {
+            --primary-color: #0ea5e9; /* Sky Blue for Entrepreneur theme */
+            --secondary-color: #0284c7;
+            --accent-color: #f97316; /* Orange */
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --card-bg: #ffffff;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        h1 small {
+            font-size: 1.2rem;
+            color: #64748b;
+            display: block;
+            margin-top: 5px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #475569;
+            margin-top: 25px;
+        }
+
+        .section-desc {
+            font-style: italic;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        /* Student Registration */
+        #registration-section {
+            background-color: #e0f2fe;
+            border: 2px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .reg-input-group {
+            display: inline-block;
+            margin: 10px;
+            text-align: left;
+        }
+
+        .reg-input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+
+        .reg-input {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        #start-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+
+        #start-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Exercise Content (Hidden initially) */
+        #exercise-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        /* Exercise Cards */
+        .vocab-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f1f5f9;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .word-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .phonetic {
+            color: #64748b;
+            font-family: 'Courier New', monospace;
+            margin-left: 10px;
+        }
+
+        .pos {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .original-sentence {
+            margin-top: 10px;
+            color: #475569;
+            border-left: 3px solid #cbd5e1;
+            padding-left: 10px;
+            font-style: italic;
+            background-color: #e2e8f0;
+            padding: 8px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .example-en {
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .example-cn {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .speaker-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 10px;
+            vertical-align: middle;
+            color: var(--secondary-color);
+            transition: transform 0.2s;
+        }
+        
+        .speaker-btn:hover {
+            transform: scale(1.1);
+            color: var(--primary-color);
+        }
+
+        /* Matching Game */
+        .matching-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .matching-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .match-item {
+            padding: 12px;
+            background-color: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .match-item:hover {
+            background-color: #e0f2fe;
+            border-color: var(--primary-color);
+        }
+
+        .match-item.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .match-item.matched {
+            background-color: #dcfce7; /* Green-100 */
+            border-color: var(--success-color);
+            color: #166534;
+            cursor: default;
+            opacity: 0.8;
+        }
+        
+        .match-item.matched-wrong {
+             background-color: #fee2e2;
+             border-color: var(--error-color);
+        }
+
+        /* Inputs */
+        input[type="text"] {
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin: 0 4px;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+        }
+
+        .gap-fill-text {
+            line-height: 2;
+            background-color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Footer */
+        .submit-section {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        #submit-btn {
+            background-color: var(--success-color);
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #submit-btn:hover {
+            background-color: #15803d;
+        }
+        
+        #result-display {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+            padding: 20px;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            color: #166534;
+        }
+
+        .feedback-icon {
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .correct-icon { color: var(--success-color); }
+        .wrong-icon { color: var(--error-color); }
+
+        /* Answer Key Styles */
+        .answer-key {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            color: #166534;
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .answer-key h4 {
+            margin: 0 0 10px 0;
+            color: #15803d;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📘 CET-4 词汇内化系统 <small>Topic: Entrepreneurship & Willpower</small></h1>
+    </header>
+
+    <!-- Registration Section -->
+    <div id="registration-section">
+        <h3>👋 欢迎！请先填写您的信息 (Student Registration)</h3>
+        <div class="reg-input-group">
+            <label for="student-name">姓名 (Name):</label>
+            <input type="text" id="student-name" class="reg-input" placeholder="请输入姓名">
+        </div>
+        <div class="reg-input-group">
+            <label for="student-class">班级 (Class):</label>
+            <input type="text" id="student-class" class="reg-input" placeholder="请输入班级">
+        </div>
+        <div class="reg-input-group">
+            <label for="student-id">学号 (Student ID):</label>
+            <input type="text" id="student-id" class="reg-input" placeholder="请输入学号">
+        </div>
+        <br>
+        <button id="start-btn" onclick="startExercise()">开始练习 (Start Exercise)</button>
+    </div>
+
+    <!-- Main Content Wrapper (Hidden initially) -->
+    <div id="exercise-content">
+        <!-- Phase 1 -->
+        <section id="phase1">
+            <h2>初阶：输入与识别 (Input & Recognition)</h2>
+            
+            <div id="glossary">
+                <h3>1. 音形义讲义 (The Glossary)</h3>
+                <p class="section-desc">学习下列核心词汇，点击 🔊 图标收听发音，注意词性和例句。</p>
+                
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">entrepreneur</span>
+                        <button class="speaker-btn" onclick="speak('entrepreneur')">🔊</button>
+                        <span class="phonetic">/ˌɑːntrəprəˈnɜːr/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>People often wonder why some <strong>entrepreneurs</strong> have greater success than others.</div>
+                    <div class="example-en">The young <strong>entrepreneur</strong> started his own business immediately after graduating from university.</div>
+                    <div class="example-cn">这位年轻的企业家大学毕业后立即创办了自己的公司。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">ethic</span>
+                        <button class="speaker-btn" onclick="speak('ethic')">🔊</button>
+                        <span class="phonetic">/ˈeθɪk/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Is it habits, connections, luck, work <strong>ethic</strong> or any other behavior?</div>
+                    <div class="example-en">A strong work <strong>ethic</strong> is often considered more important than talent in achieving long-term success.</div>
+                    <div class="example-cn">在取得长期成功方面，强烈的职业道德通常被认为比天赋更重要。</div>
+                </div>
+                
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">determination</span>
+                        <button class="speaker-btn" onclick="speak('determination')">🔊</button>
+                        <span class="phonetic">/dɪˌtɜːrmɪˈneɪʃn/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>It is a strong <strong>determination</strong> that allows you to do something difficult.</div>
+                    <div class="example-en">Her <strong>determination</strong> to win the competition impressed all the judges.</div>
+                    <div class="example-cn">她赢得比赛的决心给所有评委留下了深刻印象。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">discipline</span>
+                        <button class="speaker-btn" onclick="speak('discipline')">🔊</button>
+                        <span class="phonetic">/ˈdɪsəplɪn/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>People with a great amount of willpower have the <strong>discipline</strong> to develop positive, successful habits.</div>
+                    <div class="example-en">Self-<strong>discipline</strong> is essential for anyone who wants to master a new skill without supervision.</div>
+                    <div class="example-cn">对于任何想要在无人监督下掌握新技能的人来说，自律是必不可少的。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">incredible</span>
+                        <button class="speaker-btn" onclick="speak('incredible')">🔊</button>
+                        <span class="phonetic">/ɪnˈkredəbl/</span>
+                        <span class="pos">adj.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Even with an <strong>incredible</strong> amount of talent, without the discipline... it can be difficult to achieve success.</div>
+                    <div class="example-en">The view from the top of the mountain was absolutely <strong>incredible</strong> after the long hike.</div>
+                    <div class="example-cn">经过长途跋涉，山顶的景色简直令人难以置信。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">critical</span>
+                        <button class="speaker-btn" onclick="speak('critical')">🔊</button>
+                        <span class="phonetic">/ˈkrɪtɪkl/</span>
+                        <span class="pos">adj.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>It is <strong>critical</strong> to create good habits and take the actions necessary to stick to those habits.</div>
+                    <div class="example-en">It is <strong>critical</strong> that we address these environmental issues before it is too late.</div>
+                    <div class="example-cn">至关重要的是，我们要在为时已晚之前解决这些环境问题。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">automatically</span>
+                        <button class="speaker-btn" onclick="speak('automatically')">🔊</button>
+                        <span class="phonetic">/ˌɔːtəˈmætɪkli/</span>
+                        <span class="pos">adv.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>...you will <strong>automatically</strong> perform those tasks on a day-to-day basis.</div>
+                    <div class="example-en">The doors of the shopping mall open <strong>automatically</strong> when you approach them.</div>
+                    <div class="example-cn">当你走近时，购物中心的门会自动打开。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">passionate</span>
+                        <button class="speaker-btn" onclick="speak('passionate')">🔊</button>
+                        <span class="phonetic">/ˈpæʃənət/</span>
+                        <span class="pos">adj.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>...or if your business is something you're <strong>passionate</strong> about.</div>
+                    <div class="example-en">She is deeply <strong>passionate</strong> about wildlife conservation and environmental protection.</div>
+                    <div class="example-cn">她对野生动物保护和环境保护充满热情。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">associated</span>
+                        <button class="speaker-btn" onclick="speak('associated')">🔊</button>
+                        <span class="phonetic">/əˈsoʊsieɪtɪd/</span>
+                        <span class="pos">adj./v.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Having a valuable outcome <strong>associated</strong> with a habit will help you stick to that habit permanently.</div>
+                    <div class="example-en">There are many health risks <strong>associated</strong> with smoking cigarettes and heavy drinking.</div>
+                    <div class="example-cn">吸烟和酗酒有许多相关的健康风险。</div>
+                </div>
+
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">permanently</span>
+                        <button class="speaker-btn" onclick="speak('permanently')">🔊</button>
+                        <span class="phonetic">/ˈpɜːrmənəntli/</span>
+                        <span class="pos">adv.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>...help you stick to that habit <strong>permanently</strong>.</div>
+                    <div class="example-en">The exhibition has been <strong>permanently</strong> closed due to lack of funding from the government.</div>
+                    <div class="example-cn">由于缺乏政府资助，该展览已永久关闭。</div>
+                </div>
+            </div>
+
+            <div id="matching">
+                <h3>2. 释义连线 (Meaning Matching)</h3>
+                <p class="section-desc">点击左侧单词，再点击右侧对应的中文释义进行配对。</p>
+                <div class="matching-container" id="meaning-match-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="answer-key" id="ans-2">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>entrepreneur=企业家; ethic=道德准则/伦理; determination=决心; discipline=自律/纪律; incredible=难以置信的; critical=关键的; automatically=自动地; passionate=热情的; associated=相关的; permanently=永久地</p>
+                </div>
+            </div>
+
+            <div id="gap-filling">
+                <h3>3. 语境还原填空 (Contextual Gap-filling)</h3>
+                <p class="section-desc">根据首字母提示补全单词（请注意时态和形式）。</p>
+                <div class="gap-fill-text">
+                    People often wonder why some <strong>e</strong><input type="text" class="gap-input" data-answer="entrepreneurs" size="10"> (1) have greater success... Is it habits... or work <strong>e</strong><input type="text" class="gap-input" data-answer="ethic" size="5"> (2)? ...People with willpower have the <strong>d</strong><input type="text" class="gap-input" data-answer="discipline" size="10"> (3) to develop positive habits. Even with an <strong>i</strong><input type="text" class="gap-input" data-answer="incredible" size="10"> (4) amount of talent... it can be difficult to achieve success. ...once the correct habits are in place, you will <strong>a</strong><input type="text" class="gap-input" data-answer="automatically" size="12"> (5) perform those tasks. ...if your business is something you're <strong>p</strong><input type="text" class="gap-input" data-answer="passionate" size="10"> (6) about. ...Having a valuable outcome <strong>a</strong><input type="text" class="gap-input" data-answer="associated" size="10"> (7) with a habit... help you stick to that habit <strong>p</strong><input type="text" class="gap-input" data-answer="permanently" size="10"> (8). It is a strong <strong>d</strong><input type="text" class="gap-input" data-answer="determination" size="10"> (9) that allows you to do something difficult.
+                </div>
+                <div class="answer-key" id="ans-3">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. entrepreneurs, 2. ethic, 3. discipline, 4. incredible, 5. automatically, 6. passionate, 7. associated, 8. permanently, 9. determination</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 2 -->
+        <section id="phase2">
+            <h2>中阶：内化与操练 (Intake & Manipulation)</h2>
+
+            <div id="collocation">
+                <h3>4. 词块/搭配匹配 (Collocation Match)</h3>
+                <p class="section-desc">将动词/名词与正确的搭配连线。</p>
+                <div class="matching-container" id="collocation-match-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="answer-key" id="ans-4">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>work + ethic; passionate + about something; associated + with; incredible + amount/talent; strong + determination; stick to + a habit</p>
+                </div>
+            </div>
+
+            <div id="grammar">
+                <h3>5. 语法填空/变形 (Grammatical Transformation)</h3>
+                <p class="section-desc">用括号内单词的正确形式填空。</p>
+                <ol>
+                    <li>It is not <input type="text" class="grammar-input" data-answer="ethical"> (ethic) to cheat on an exam.</li>
+                    <li>He has a great <input type="text" class="grammar-input" data-answer="passion"> (passionate) for music.</li>
+                    <li>The machine works <input type="text" class="grammar-input" data-answer="automatically"> (automatic) without manual control.</li>
+                    <li>There are many health risks <input type="text" class="grammar-input" data-answer="associated"> (associate) with smoking.</li>
+                    <li>Her <input type="text" class="grammar-input" data-answer="determination"> (determine) to succeed is admirable.</li>
+                </ol>
+                <div class="answer-key" id="ans-5">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. ethical, 2. passion, 3. automatically, 4. associated, 5. determination</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="submit-section">
+            <button id="submit-btn" onclick="checkAllAnswers()">提交并检查答案 (Submit & Check)</button>
+            <div id="result-display"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data for Matching Exercises
+    const meaningData = [
+        { en: "entrepreneur (n.)", cn: "企业家", id: 1 },
+        { en: "ethic (n.)", cn: "道德准则/伦理", id: 2 },
+        { en: "determination (n.)", cn: "决心", id: 3 },
+        { en: "discipline (n.)", cn: "自律/纪律", id: 4 },
+        { en: "incredible (adj.)", cn: "难以置信的", id: 5 },
+        { en: "critical (adj.)", cn: "关键的", id: 6 },
+        { en: "automatically (adv.)", cn: "自动地", id: 7 },
+        { en: "passionate (adj.)", cn: "热情的", id: 8 },
+        { en: "associated (adj.)", cn: "相关的", id: 9 },
+        { en: "permanently (adv.)", cn: "永久地", id: 10 }
+    ];
+
+    const collocationData = [
+        { partA: "work", partB: "ethic", id: 1 },
+        { partA: "strong", partB: "determination", id: 2 },
+        { partA: "passionate", partB: "about something", id: 3 },
+        { partA: "associated", partB: "with", id: 4 },
+        { partA: "incredible", partB: "amount/talent", id: 5 },
+        { partA: "stick to", partB: "a habit", id: 6 }
+    ];
+
+    // Student Info
+    let studentInfo = {
+        name: "",
+        class: "",
+        id: ""
+    };
+
+    function startExercise() {
+        const name = document.getElementById('student-name').value.trim();
+        const cls = document.getElementById('student-class').value.trim();
+        const id = document.getElementById('student-id').value.trim();
+
+        if (!name || !cls) {
+            alert("请至少填写姓名和班级 (Please fill in your Name and Class).");
+            return;
+        }
+
+        studentInfo = { name, class: cls, id };
+        
+        // Hide registration, show content
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('exercise-content').style.display = 'block';
+    }
+
+    // State for Matching
+    let selectedLeft = null;
+    let matchesMeaning = {};
+    let matchesCollocation = {};
+
+    // Initialize Page
+    window.onload = function() {
+        renderMatching("meaning-match-container", meaningData, "matchesMeaning");
+        renderMatching("collocation-match-container", collocationData, "matchesCollocation");
+    };
+
+    // Render Matching Games
+    function renderMatching(containerId, data, storageName) {
+        const container = document.getElementById(containerId);
+        const leftCol = document.createElement('div');
+        leftCol.className = 'matching-column';
+        const rightCol = document.createElement('div');
+        rightCol.className = 'matching-column';
+
+        // Shuffle right side
+        const rightData = [...data].sort(() => Math.random() - 0.5);
+
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.textContent = item.en || item.partA;
+            div.dataset.id = item.id;
+            div.dataset.side = 'left';
+            div.onclick = (e) => handleMatchClick(e, storageName, containerId);
+            leftCol.appendChild(div);
+        });
+
+        rightData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.textContent = item.cn || item.partB;
+            div.dataset.id = item.id;
+            div.dataset.side = 'right';
+            div.onclick = (e) => handleMatchClick(e, storageName, containerId);
+            rightCol.appendChild(div);
+        });
+
+        container.appendChild(leftCol);
+        container.appendChild(rightCol);
+    }
+
+    let currentSelection = {
+        matchesMeaning: { left: null, right: null },
+        matchesCollocation: { left: null, right: null }
+    };
+
+    function handleMatchClick(e, storageName, containerId) {
+        const el = e.target;
+        if (el.classList.contains('matched')) return;
+
+        const side = el.dataset.side;
+        const current = currentSelection[storageName];
+
+        // Deselect if clicking same item
+        if (current[side] === el) {
+            el.classList.remove('selected');
+            current[side] = null;
+            return;
+        }
+
+        // Select new item (clear previous on same side)
+        if (current[side]) current[side].classList.remove('selected');
+        el.classList.add('selected');
+        current[side] = el;
+
+        // Check for match attempt
+        if (current.left && current.right) {
+            checkMatch(current.left, current.right, storageName);
+        }
+    }
+
+    function checkMatch(leftEl, rightEl, storageName) {
+        if (leftEl.dataset.id === rightEl.dataset.id) {
+            // Correct
+            leftEl.classList.remove('selected');
+            rightEl.classList.remove('selected');
+            leftEl.classList.add('matched');
+            rightEl.classList.add('matched');
+            
+            // Visual connector
+            leftEl.textContent += " ✅";
+            rightEl.textContent = "✅ " + rightEl.textContent;
+        } else {
+            // Incorrect
+            leftEl.classList.add('matched-wrong');
+            rightEl.classList.add('matched-wrong');
+            setTimeout(() => {
+                leftEl.classList.remove('matched-wrong', 'selected');
+                rightEl.classList.remove('matched-wrong', 'selected');
+            }, 500);
+        }
+        // Reset selection
+        currentSelection[storageName] = { left: null, right: null };
+    }
+
+    // Enhanced TTS Setup
+    let voices = [];
+    
+    function loadVoices() {
+        // Get all available voices
+        voices = window.speechSynthesis.getVoices();
+    }
+    
+    // Load voices immediately and on change
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speak(text) {
+        // Cancel any ongoing speech to avoid queueing
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8; // Slower rate for clearer pronunciation (0.1 to 10)
+        utterance.pitch = 1;  // Normal pitch (0 to 2)
+        utterance.volume = 1; // Max volume (0 to 1)
+
+        // Try to select a high-quality English voice
+        if (voices.length === 0) loadVoices();
+        
+        // Priority: Google US English > Microsoft Zira > Samantha > Daniel > Any en-US
+        const preferredVoice = voices.find(v => v.name === 'Google US English') || 
+                               voices.find(v => v.name === 'Microsoft Zira Desktop') || 
+                               voices.find(v => v.name === 'Samantha') || 
+                               voices.find(v => v.name === 'Daniel') ||
+                               voices.find(v => v.lang === 'en-US' && v.name.includes('Enhanced')) ||
+                               voices.find(v => v.lang === 'en-US');
+
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+            // console.log("Using voice: " + preferredVoice.name);
+        }
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Validation Logic
+    function checkAllAnswers() {
+        let score = 0;
+        let total = 0;
+
+        // 1. Gap Filling
+        const gaps = document.querySelectorAll('.gap-input');
+        gaps.forEach(input => {
+            total++;
+            const userVal = input.value.trim().toLowerCase();
+            const correctVal = input.dataset.answer.toLowerCase();
+            if (userVal === correctVal) {
+                score++;
+                input.style.borderColor = 'var(--success-color)';
+                input.style.backgroundColor = '#dcfce7';
+            } else {
+                input.style.borderColor = 'var(--error-color)';
+                input.style.backgroundColor = '#fee2e2';
+            }
+        });
+
+        // 2. Grammar
+        const grammars = document.querySelectorAll('.grammar-input');
+        grammars.forEach(input => {
+            total++;
+            const userVal = input.value.trim().toLowerCase();
+            const correctVal = input.dataset.answer.toLowerCase();
+            if (userVal === correctVal) {
+                score++;
+                input.style.borderColor = 'var(--success-color)';
+                input.style.backgroundColor = '#dcfce7';
+            } else {
+                input.style.borderColor = 'var(--error-color)';
+                input.style.backgroundColor = '#fee2e2';
+            }
+        });
+        
+        // Matching games
+        const matchedItems = document.querySelectorAll('.match-item.matched');
+        
+        const resultDiv = document.getElementById('result-display');
+        const percentage = Math.round((score / total) * 100);
+        
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <h3>📊 成绩单 (Report Card)</h3>
+            <div id="report-text" style="text-align: left; display: inline-block;">
+                <p><strong>姓名 (Name):</strong> ${studentInfo.name}</p>
+                <p><strong>班级 (Class):</strong> ${studentInfo.class}</p>
+                <p><strong>学号 (ID):</strong> ${studentInfo.id || 'N/A'}</p>
+                <hr>
+                <p><strong>Written Score:</strong> ${score}/${total} (${percentage}%)</p>
+            </div>
+            <br>
+            <button onclick="copyReport()" style="margin-top:15px;background-color:#64748b;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:0.9rem;">📋 复制成绩 (Copy Result)</button>
+            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">点击复制后，请粘贴发送给老师<br>(Click copy, then paste and send to your teacher)</p>
+            <p style="font-size: 0.9rem; color: #666">Check matching sections manually for completeness.</p>
+        `;
+        resultDiv.style.color = percentage > 80 ? 'var(--success-color)' : (percentage > 60 ? 'var(--accent-color)' : 'var(--error-color)');
+        
+        // Show all answer keys
+        document.querySelectorAll('.answer-key').forEach(el => el.style.display = 'block');
+        
+        alert(`Hello ${studentInfo.name}!\nYour Written Score: ${score}/${total}\n\nGreat job! Scroll down to see answers and COPY your result.`);
+    }
+
+    function copyReport() {
+        const reportText = document.getElementById('report-text').innerText;
+        const finalCopy = `[CET-4 Vocab Exercise]\n------------------\n${reportText}\n------------------`;
+        navigator.clipboard.writeText(finalCopy).then(() => {
+            alert("✅ 成绩已复制！\n请去微信/钉钉粘贴发送给老师。\n(Copied! Please paste and send to your teacher.)");
+        }).catch(err => {
+            alert("❌ 复制失败，请手动截图成绩单。\n(Copy failed, please take a screenshot.)");
+        });
+    }
+
+</script>
+
+</body>
+</html>

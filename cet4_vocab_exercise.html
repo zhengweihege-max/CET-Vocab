@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CET-4 词汇内化系统 | Vocabulary Internalization System</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #4b5563;
+            margin-top: 25px;
+        }
+
+        .section-desc {
+            font-style: italic;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        /* Student Registration */
+        #registration-section {
+            background-color: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .reg-input-group {
+            display: inline-block;
+            margin: 10px;
+            text-align: left;
+        }
+
+        .reg-input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+
+        .reg-input {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        #start-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+
+        #start-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Exercise Content (Hidden initially) */
+        #exercise-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        /* Exercise Cards */
+        .vocab-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9fafb;
+            transition: transform 0.2s;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .word-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .phonetic {
+            color: #6b7280;
+            font-family: 'Courier New', monospace;
+            margin-left: 10px;
+        }
+
+        .pos {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .original-sentence {
+            margin-top: 10px;
+            color: #4b5563;
+            border-left: 3px solid #cbd5e1;
+            padding-left: 10px;
+            font-style: italic;
+            background-color: #f1f5f9;
+            padding: 8px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .example-en {
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .example-cn {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Matching Game */
+        .matching-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .matching-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .match-item {
+            padding: 12px;
+            background-color: #fff;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .match-item:hover {
+            background-color: #eff6ff;
+            border-color: var(--primary-color);
+        }
+
+        .match-item.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .match-item.matched {
+            background-color: #d1fae5; /* Green-100 */
+            border-color: var(--success-color);
+            color: #065f46;
+            cursor: default;
+            opacity: 0.8;
+        }
+        
+        .match-item.matched-wrong {
+             background-color: #fee2e2;
+             border-color: var(--error-color);
+        }
+
+        /* Inputs */
+        input[type="text"] {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin: 0 4px;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .gap-fill-text {
+            line-height: 2;
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Audio Section */
+        .audio-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .option-btn.correct {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+        
+        .option-btn.wrong {
+            background-color: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+        }
+
+        /* Cloze & Translation */
+        select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background-color: white;
+        }
+
+        /* Footer */
+        .submit-section {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        #submit-btn {
+            background-color: var(--success-color);
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #submit-btn:hover {
+            background-color: #059669;
+        }
+        
+        #result-display {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+            padding: 20px;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            color: #166534;
+        }
+
+        .feedback-icon {
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .correct-icon { color: var(--success-color); }
+        .wrong-icon { color: var(--error-color); }
+
+        /* Answer Key Styles */
+        .answer-key {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            color: #166534;
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .answer-key h4 {
+            margin: 0 0 10px 0;
+            color: #15803d;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📘 CET-4 词汇内化系统</h1>
+        <p>Vocabulary Internalization System</p>
+    </header>
+
+    <!-- Registration Section -->
+    <div id="registration-section">
+        <h3>👋 欢迎！请先填写您的信息 (Student Registration)</h3>
+        <div class="reg-input-group">
+            <label for="student-name">姓名 (Name):</label>
+            <input type="text" id="student-name" class="reg-input" placeholder="请输入姓名">
+        </div>
+        <div class="reg-input-group">
+            <label for="student-class">班级 (Class):</label>
+            <input type="text" id="student-class" class="reg-input" placeholder="请输入班级">
+        </div>
+        <div class="reg-input-group">
+            <label for="student-id">学号 (Student ID):</label>
+            <input type="text" id="student-id" class="reg-input" placeholder="请输入学号">
+        </div>
+        <br>
+        <button id="start-btn" onclick="startExercise()">开始练习 (Start Exercise)</button>
+    </div>
+
+    <!-- Main Content Wrapper (Hidden initially) -->
+    <div id="exercise-content">
+        <!-- Phase 1 -->
+        <section id="phase1">
+            <h2>初阶：输入与识别 (Input & Recognition)</h2>
+            
+            <div id="glossary">
+                <h3>1. 音形义讲义 (The Glossary)</h3>
+                <p class="section-desc">学习下列核心词汇，注意发音、词性和例句。</p>
+                
+                <div class="vocab-card">
+                    <div>
+                        <span class="word-title">allegedly</span>
+                        <span class="phonetic">/əˈledʒɪdli/</span>
+                        <span class="pos">adv.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>A woman was charged with <strong>allegedly</strong> violating a Rhode Island city law against feeding wild animals.</div>
+                    <div class="example-en">The company was <strong>allegedly</strong> involved in a financial scandal last year.</div>
+                    <div class="example-cn">这家公司据称去年卷入了一起财务丑闻。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">violate</span>
+                        <span class="phonetic">/ˈvaɪəleɪt/</span>
+                        <span class="pos">v.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>A woman was charged with allegedly <strong>violating</strong> a Rhode Island city law against feeding wild animals.</div>
+                    <div class="example-en">Students who <strong>violate</strong> the university's code of conduct may face serious disciplinary actions.</div>
+                    <div class="example-cn">违反大学行为准则的学生可能会面临严重的纪律处分。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">charge</span>
+                        <span class="phonetic">/tʃɑːrdʒ/</span>
+                        <span class="pos">v.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>A woman was <strong>charged</strong> with allegedly violating a Rhode Island city law against feeding wild animals.</div>
+                    <div class="example-en">He was <strong>charged</strong> with theft after being caught stealing from the store.</div>
+                    <div class="example-cn">他在被抓到从商店偷窃后被指控盗窃。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">capture</span>
+                        <span class="phonetic">/ˈkæptʃər/</span>
+                        <span class="pos">v.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Newly installed cameras <strong>captured</strong> several rats active in the middle of the day.</div>
+                    <div class="example-en">The photographer managed to <strong>capture</strong> the beautiful sunrise over the mountains.</div>
+                    <div class="example-cn">摄影师设法捕捉到了山脉上美丽的日出。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">prohibit</span>
+                        <span class="phonetic">/prəˈhɪbɪt/</span>
+                        <span class="pos">v.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>It is <strong>prohibited</strong> to feed any wild animals including birds in Rhode Island City.</div>
+                    <div class="example-en">Smoking is strictly <strong>prohibited</strong> in all public buildings.</div>
+                    <div class="example-cn">所有公共建筑内严禁吸烟。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">intention</span>
+                        <span class="phonetic">/ɪnˈtenʃn/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Nevertheless, while the woman's <strong>intention</strong> was to feed birds...</div>
+                    <div class="example-en">I accepted the job offer with the <strong>intention</strong> of gaining more experience.</div>
+                    <div class="example-cn">我接受这份工作是为了获得更多经验。</div>
+                </div>
+
+                 <div class="vocab-card">
+                    <div>
+                        <span class="word-title">administration</span>
+                        <span class="phonetic">/ədˌmɪnɪˈstreɪʃn/</span>
+                        <span class="pos">n.</span>
+                    </div>
+                    <div class="original-sentence"><strong>原文：</strong>Anthony Moretti, director of the city <strong>administration</strong>, said he saw more than 20 rats near the woman's home.</div>
+                    <div class="example-en">The new school <strong>administration</strong> is planning to improve the library facilities.</div>
+                    <div class="example-cn">新一届学校行政部门计划改善图书馆设施。</div>
+                </div>
+            </div>
+
+            <div id="matching">
+                <h3>2. 释义连线 (Meaning Matching)</h3>
+                <p class="section-desc">点击左侧单词，再点击右侧对应的中文释义进行配对。</p>
+                <div class="matching-container" id="meaning-match-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="answer-key" id="ans-2">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>allegedly = 据说；violate = 违反；charge = 指控/控告；capture = 捕捉；prohibit = 禁止；intention = 意图；administration = 行政</p>
+                </div>
+            </div>
+
+            <div id="gap-filling">
+                <h3>3. 语境还原填空 (Contextual Gap-filling)</h3>
+                <p class="section-desc">根据首字母提示补全单词（请注意时态和形式）。</p>
+                <div class="gap-fill-text">
+                    A woman was <strong>c</strong><input type="text" class="gap-input" data-answer="charged" size="8"> (1) with <strong>a</strong><input type="text" class="gap-input" data-answer="allegedly" size="8"> (2) <strong>v</strong><input type="text" class="gap-input" data-answer="violating" size="8"> (3) a Rhode Island city law against feeding wild animals. The 55-year-old woman's neighbors blame her for making the area's rat problem worse. Newly installed cameras <strong>c</strong><input type="text" class="gap-input" data-answer="captured" size="8"> (4) several rats active in the middle of the day. ... It is <strong>p</strong><input type="text" class="gap-input" data-answer="prohibited" size="9"> (5) to feed any wild animals including birds in Rhode Island City. Nevertheless, while the woman's <strong>i</strong><input type="text" class="gap-input" data-answer="intention" size="8"> (6) was to feed birds, it is clear that rats were also benefiting. Anthony Moretti, director of the city <strong>a</strong><input type="text" class="gap-input" data-answer="administration" size="12"> (7), said he saw more than 20 rats near the woman's home.
+                </div>
+                <div class="answer-key" id="ans-3">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. charged, 2. allegedly, 3. violating, 4. captured, 5. prohibited, 6. intention, 7. administration</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 2 -->
+        <section id="phase2">
+            <h2>中阶：内化与操练 (Intake & Manipulation)</h2>
+
+            <div id="collocation">
+                <h3>4. 词块/搭配匹配 (Collocation Match)</h3>
+                <p class="section-desc">将动词/名词与正确的搭配连线。</p>
+                <div class="matching-container" id="collocation-match-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="answer-key" id="ans-4">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>violate + a law/rule; charge + sb. with a crime; capture + a moment; prohibit + sb. from; city + administration</p>
+                </div>
+            </div>
+
+            <div id="grammar">
+                <h3>5. 语法填空/变形 (Grammatical Transformation)</h3>
+                <p class="section-desc">用括号内单词的正确形式填空。</p>
+                <ol>
+                    <li>The restaurant was closed due to serious health code <input type="text" class="grammar-input" data-answer="violations"> (violate).</li>
+                    <li>He was <input type="text" class="grammar-input" data-answer="allegedly"> (allege) involved in the crime, but there was no proof.</li>
+                    <li>She didn't <input type="text" class="grammar-input" data-answer="intend"> (intention) to hurt your feelings.</li>
+                    <li>The strict <input type="text" class="grammar-input" data-answer="prohibition"> (prohibit) of alcohol is enforced here.</li>
+                    <li>He has a lot of <input type="text" class="grammar-input" data-answer="administrative"> (administration) work to do.</li>
+                </ol>
+                <div class="answer-key" id="ans-5">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. violations, 2. allegedly, 3. intend, 4. prohibition, 5. administrative</p>
+                </div>
+            </div>
+
+            <div id="auditory">
+                <h3>6. 听音辨位 (Auditory Recognition)</h3>
+                <p class="section-desc">点击播放按钮，选择你听到的单词。</p>
+                <div id="audio-exercises">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="answer-key" id="ans-6">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. violate, 2. intention, 3. prohibit, 4. capture, 5. charge</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 3 -->
+        <section id="phase3">
+            <h2>高阶：产出与应用 (Output & Application)</h2>
+
+            <div id="mini-cloze">
+                <h3>7. 微型完型填空 (Mini-Cloze)</h3>
+                <p class="section-desc">阅读短文，选择最合适的词填空。</p>
+                <div class="gap-fill-text">
+                    Managing wildlife in urban areas is a complex task for the city 
+                    <select class="cloze-select" data-answer="administration">
+                        <option value="">(1) Select...</option>
+                        <option value="administration">administration</option>
+                        <option value="intention">intention</option>
+                        <option value="charge">charge</option>
+                        <option value="prohibit">prohibit</option>
+                        <option value="violate">violate</option>
+                        <option value="capture">capture</option>
+                    </select>. 
+                    While many residents have the good 
+                    <select class="cloze-select" data-answer="intention">
+                        <option value="">(2) Select...</option>
+                        <option value="administration">administration</option>
+                        <option value="intention">intention</option>
+                        <option value="charge">charge</option>
+                        <option value="prohibit">prohibit</option>
+                        <option value="violate">violate</option>
+                        <option value="capture">capture</option>
+                    </select>
+                    of helping animals by feeding them, this can lead to unexpected issues. For example, leaving food out might attract rats, and cameras might 
+                    <select class="cloze-select" data-answer="capture">
+                        <option value="">(3) Select...</option>
+                        <option value="administration">administration</option>
+                        <option value="intention">intention</option>
+                        <option value="charge">charge</option>
+                        <option value="prohibit">prohibit</option>
+                        <option value="violate">violate</option>
+                        <option value="capture">capture</option>
+                    </select>
+                    them eating the food. To control this, laws are often created to 
+                    <select class="cloze-select" data-answer="prohibit">
+                        <option value="">(4) Select...</option>
+                        <option value="administration">administration</option>
+                        <option value="intention">intention</option>
+                        <option value="charge">charge</option>
+                        <option value="prohibit">prohibit</option>
+                        <option value="violate">violate</option>
+                        <option value="capture">capture</option>
+                    </select>
+                    public feeding. Residents who 
+                    <select class="cloze-select" data-answer="violate">
+                        <option value="">(5) Select...</option>
+                        <option value="administration">administration</option>
+                        <option value="intention">intention</option>
+                        <option value="charge">charge</option>
+                        <option value="prohibit">prohibit</option>
+                        <option value="violate">violate</option>
+                        <option value="capture">capture</option>
+                    </select>
+                    these rules may face fines.
+                </div>
+                <div class="answer-key" id="ans-7">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. administration, 2. intention, 3. capture, 4. prohibit, 5. violate</p>
+                </div>
+            </div>
+
+            <div id="translation">
+                <h3>8. “局部重构”中译英 (Partial Translation)</h3>
+                <p class="section-desc">根据中文提示补全句子。</p>
+                <ol>
+                    <li>Many people believe that strict laws should be made to <input type="text" class="trans-input" data-answer="prohibit littering"> (禁止乱扔垃圾).</li>
+                    <li>The driver <input type="text" class="trans-input" data-answer="was charged"> (被指控) with speeding last night.</li>
+                    <li>He <input type="text" class="trans-input" data-answer="was blamed"> (被指责) for the failure of the project.</li>
+                    <li>Her <input type="text" class="trans-input" data-answer="intention was"> (意图是) to surprise her parents.</li>
+                    <li>The police <input type="text" class="trans-input" data-answer="allegedly captured"> (据称抓捕了) the suspect near the border.</li>
+                </ol>
+                <div class="answer-key" id="ans-8">
+                    <h4>✅ 参考答案 (Answer Key)</h4>
+                    <p>1. prohibit littering, 2. was charged, 3. was blamed, 4. intention was, 5. allegedly captured</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="submit-section">
+            <button id="submit-btn" onclick="checkAllAnswers()">提交并检查答案 (Submit & Check)</button>
+            <div id="result-display"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data for Matching Exercises
+    const meaningData = [
+        { en: "allegedly (adv.)", cn: "据说；据宣称", id: 1 },
+        { en: "violate (v.)", cn: "违反；违背", id: 2 },
+        { en: "charge (v.)", cn: "指控；控告", id: 3 },
+        { en: "capture (v.)", cn: "拍摄；捕捉", id: 4 },
+        { en: "prohibit (v.)", cn: "禁止；阻止", id: 5 },
+        { en: "intention (n.)", cn: "意图；目的", id: 6 },
+        { en: "administration (n.)", cn: "行政；管理部门", id: 7 }
+    ];
+
+    const collocationData = [
+        { partA: "violate", partB: "a law / a rule", id: 1 },
+        { partA: "charge", partB: "sb. with a crime", id: 2 },
+        { partA: "capture", partB: "a moment / an image", id: 3 },
+        { partA: "prohibit", partB: "sb. from doing something", id: 4 },
+        { partA: "city", partB: "administration", id: 5 }
+    ];
+
+    // Data for Audio Exercises
+    const audioData = [
+        { word: "violate", options: ["violent", "violate", "violet", "violin"], correct: 1 },
+        { word: "intention", options: ["attention", "intention", "invention", "tension"], correct: 1 },
+        { word: "prohibit", options: ["exhibit", "prohibit", "habit", "inhibit"], correct: 1 },
+        { word: "capture", options: ["captain", "capture", "culture", "rapture"], correct: 1 },
+        { word: "charge", options: ["change", "charge", "chance", "large"], correct: 1 }
+    ];
+
+    // Student Info
+    let studentInfo = {
+        name: "",
+        class: "",
+        id: ""
+    };
+
+    function startExercise() {
+        const name = document.getElementById('student-name').value.trim();
+        const cls = document.getElementById('student-class').value.trim();
+        const id = document.getElementById('student-id').value.trim();
+
+        if (!name || !cls) {
+            alert("请至少填写姓名和班级 (Please fill in your Name and Class).");
+            return;
+        }
+
+        studentInfo = { name, class: cls, id };
+        
+        // Hide registration, show content
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('exercise-content').style.display = 'block';
+        
+        // Update header or show welcome toast could go here
+    }
+
+    // State for Matching
+    let selectedLeft = null;
+    let matchesMeaning = {};
+    let matchesCollocation = {};
+
+    // Initialize Page
+    window.onload = function() {
+        renderMatching("meaning-match-container", meaningData, "matchesMeaning");
+        renderMatching("collocation-match-container", collocationData, "matchesCollocation");
+        renderAudio();
+    };
+
+    // Render Matching Games
+    function renderMatching(containerId, data, storageName) {
+        const container = document.getElementById(containerId);
+        const leftCol = document.createElement('div');
+        leftCol.className = 'matching-column';
+        const rightCol = document.createElement('div');
+        rightCol.className = 'matching-column';
+
+        // Shuffle right side
+        const rightData = [...data].sort(() => Math.random() - 0.5);
+
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.textContent = item.en || item.partA;
+            div.dataset.id = item.id;
+            div.dataset.side = 'left';
+            div.onclick = (e) => handleMatchClick(e, storageName, containerId);
+            leftCol.appendChild(div);
+        });
+
+        rightData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.textContent = item.cn || item.partB;
+            div.dataset.id = item.id;
+            div.dataset.side = 'right';
+            div.onclick = (e) => handleMatchClick(e, storageName, containerId);
+            rightCol.appendChild(div);
+        });
+
+        container.appendChild(leftCol);
+        container.appendChild(rightCol);
+    }
+
+    let currentSelection = {
+        matchesMeaning: { left: null, right: null },
+        matchesCollocation: { left: null, right: null }
+    };
+
+    function handleMatchClick(e, storageName, containerId) {
+        const el = e.target;
+        if (el.classList.contains('matched')) return;
+
+        const side = el.dataset.side;
+        const current = currentSelection[storageName];
+
+        // Deselect if clicking same item
+        if (current[side] === el) {
+            el.classList.remove('selected');
+            current[side] = null;
+            return;
+        }
+
+        // Select new item (clear previous on same side)
+        if (current[side]) current[side].classList.remove('selected');
+        el.classList.add('selected');
+        current[side] = el;
+
+        // Check for match attempt
+        if (current.left && current.right) {
+            checkMatch(current.left, current.right, storageName);
+        }
+    }
+
+    function checkMatch(leftEl, rightEl, storageName) {
+        if (leftEl.dataset.id === rightEl.dataset.id) {
+            // Correct
+            leftEl.classList.remove('selected');
+            rightEl.classList.remove('selected');
+            leftEl.classList.add('matched');
+            rightEl.classList.add('matched');
+            
+            // Visual connector (simplified text update or color)
+            leftEl.textContent += " ✅";
+            rightEl.textContent = "✅ " + rightEl.textContent;
+        } else {
+            // Incorrect
+            leftEl.classList.add('matched-wrong');
+            rightEl.classList.add('matched-wrong');
+            setTimeout(() => {
+                leftEl.classList.remove('matched-wrong', 'selected');
+                rightEl.classList.remove('matched-wrong', 'selected');
+            }, 500);
+        }
+        // Reset selection
+        currentSelection[storageName] = { left: null, right: null };
+    }
+
+    // Render Audio
+    function renderAudio() {
+        const container = document.getElementById('audio-exercises');
+        audioData.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'vocab-card';
+            
+            const btn = document.createElement('button');
+            btn.className = 'audio-btn';
+            btn.innerHTML = '🔊 播放音频 (Play Audio)';
+            btn.onclick = () => speak(item.word);
+            
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+            
+            item.options.forEach((opt, optIndex) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'option-btn';
+                optBtn.textContent = opt;
+                optBtn.onclick = function() {
+                    // Reset siblings
+                    Array.from(grid.children).forEach(c => c.classList.remove('correct', 'wrong'));
+                    if (optIndex === (item.correct === 1 && opt === item.word ? optIndex : -1) || opt === item.word) {
+                         optBtn.classList.add('correct');
+                         speak("Correct!");
+                    } else {
+                         optBtn.classList.add('wrong');
+                         // Highlight correct one
+                         Array.from(grid.children).forEach(c => {
+                             if(c.textContent === item.word) c.classList.add('correct');
+                         });
+                         speak("Try again");
+                    }
+                };
+                grid.appendChild(optBtn);
+            });
+
+            card.appendChild(btn);
+            card.appendChild(grid);
+            container.appendChild(card);
+        });
+    }
+
+    // Enhanced TTS Setup
+    let voices = [];
+    
+    function loadVoices() {
+        // Get all available voices
+        voices = window.speechSynthesis.getVoices();
+    }
+    
+    // Load voices immediately and on change
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speak(text) {
+        // Cancel any ongoing speech to avoid queueing
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8; // Slower rate for clearer pronunciation (0.1 to 10)
+        utterance.pitch = 1;  // Normal pitch (0 to 2)
+        utterance.volume = 1; // Max volume (0 to 1)
+
+        // Try to select a high-quality English voice
+        if (voices.length === 0) loadVoices();
+        
+        // Priority: Google US English > Microsoft Zira > Samantha > Daniel > Any en-US
+        const preferredVoice = voices.find(v => v.name === 'Google US English') || 
+                               voices.find(v => v.name === 'Microsoft Zira Desktop') || 
+                               voices.find(v => v.name === 'Samantha') ||
+                               voices.find(v => v.name === 'Daniel') ||
+                               voices.find(v => v.lang === 'en-US' && v.name.includes('Enhanced')) ||
+                               voices.find(v => v.lang === 'en-US');
+
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+            // console.log("Using voice: " + preferredVoice.name);
+        }
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Validation Logic
+    function checkAllAnswers() {
+        let score = 0;
+        let total = 0;
+
+        // 1. Gap Filling
+        const gaps = document.querySelectorAll('.gap-input');
+        gaps.forEach(input => {
+            total++;
+            const userVal = input.value.trim().toLowerCase();
+            const correctVal = input.dataset.answer.toLowerCase();
+            if (userVal === correctVal) {
+                score++;
+                input.style.borderColor = 'var(--success-color)';
+                input.style.backgroundColor = '#d1fae5';
+            } else {
+                input.style.borderColor = 'var(--error-color)';
+                input.style.backgroundColor = '#fee2e2';
+            }
+        });
+
+        // 2. Grammar
+        const grammars = document.querySelectorAll('.grammar-input');
+        grammars.forEach(input => {
+            total++;
+            const userVal = input.value.trim().toLowerCase();
+            const correctVal = input.dataset.answer.toLowerCase();
+            if (userVal === correctVal) {
+                score++;
+                input.style.borderColor = 'var(--success-color)';
+                input.style.backgroundColor = '#d1fae5';
+            } else {
+                input.style.borderColor = 'var(--error-color)';
+                input.style.backgroundColor = '#fee2e2';
+            }
+        });
+
+        // 3. Mini Cloze
+        const selects = document.querySelectorAll('.cloze-select');
+        selects.forEach(sel => {
+            total++;
+            if (sel.value === sel.dataset.answer) {
+                score++;
+                sel.style.borderColor = 'var(--success-color)';
+                sel.style.backgroundColor = '#d1fae5';
+            } else {
+                sel.style.borderColor = 'var(--error-color)';
+                sel.style.backgroundColor = '#fee2e2';
+            }
+        });
+
+        // 4. Translation
+        const trans = document.querySelectorAll('.trans-input');
+        trans.forEach(input => {
+            total++;
+            const userVal = input.value.trim().toLowerCase();
+            const correctVal = input.dataset.answer.toLowerCase();
+            // Simple strict check, could be improved with regex
+            if (userVal === correctVal) {
+                score++;
+                input.style.borderColor = 'var(--success-color)';
+                input.style.backgroundColor = '#d1fae5';
+            } else {
+                input.style.borderColor = 'var(--error-color)';
+                input.style.backgroundColor = '#fee2e2';
+            }
+        });
+        
+        // Matching games (estimate score based on matched class)
+        // This is a bit simplified as they are interactive immediate feedback
+        const matchedItems = document.querySelectorAll('.match-item.matched');
+        // Each pair is 2 items, so divide by 2
+        const matchesCount = matchedItems.length / 2;
+        // Total pairs: 8 (meaning) + 6 (collocation) = 14
+        // We won't add this to the total count for the alert to keep it simple, 
+        // or we can just say "Please complete matching games above".
+        
+        const resultDiv = document.getElementById('result-display');
+        const percentage = Math.round((score / total) * 100);
+        
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <h3>📊 成绩单 (Report Card)</h3>
+            <div id="report-text" style="text-align: left; display: inline-block;">
+                <p><strong>姓名 (Name):</strong> ${studentInfo.name}</p>
+                <p><strong>班级 (Class):</strong> ${studentInfo.class}</p>
+                <p><strong>学号 (ID):</strong> ${studentInfo.id || 'N/A'}</p>
+                <hr>
+                <p><strong>Written Score:</strong> ${score}/${total} (${percentage}%)</p>
+            </div>
+            <br>
+            <button onclick="copyReport()" style="margin-top:15px;background-color:#64748b;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:0.9rem;">📋 复制成绩 (Copy Result)</button>
+            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">点击复制后，请粘贴发送给老师<br>(Click copy, then paste and send to your teacher)</p>
+            <p style="font-size: 0.9rem; color: #666">Check matching and audio sections manually for completeness.</p>
+        `;
+        resultDiv.style.color = percentage > 80 ? 'var(--success-color)' : (percentage > 60 ? 'var(--accent-color)' : 'var(--error-color)');
+        
+        // Show all answer keys
+        document.querySelectorAll('.answer-key').forEach(el => el.style.display = 'block');
+        
+        alert(`Hello ${studentInfo.name}!\nYour Written Score: ${score}/${total}\n\nGreat job! Scroll down to see answers and COPY your result.`);
+    }
+
+    function copyReport() {
+        const reportText = document.getElementById('report-text').innerText;
+        const finalCopy = `[CET-4 Vocab Exercise]\n------------------\n${reportText}\n------------------`;
+        navigator.clipboard.writeText(finalCopy).then(() => {
+            alert("✅ 成绩已复制！\n请去微信/钉钉粘贴发送给老师。\n(Copied! Please paste and send to your teacher.)");
+        }).catch(err => {
+            alert("❌ 复制失败，请手动截图成绩单。\n(Copy failed, please take a screenshot.)");
+        });
+    }
+
+</script>
+
+</body>
+</html>
