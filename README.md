@@ -28,3 +28,4 @@
 1. 将代码推送到 GitHub 仓库。
 2. 在仓库 Settings -> Pages 中选择 `main` 分支作为 Source。
 3. 获取生成的链接（例如 `https://username.github.io/repo-name/`）发给学生。
+# CET-Vocab
